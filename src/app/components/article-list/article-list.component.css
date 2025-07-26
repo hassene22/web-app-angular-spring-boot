@@ -1,0 +1,61 @@
+.invoice-info {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.invoice-field {
+  margin-bottom: 10px;
+}
+
+.invoice-field label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.fournisseur-selector {
+  position: relative;
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: white;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  width: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown div {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background-color: #f0f0f0;
+}
+
+.validate-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.validate-btn:hover {
+  background-color: #45a049;
+}

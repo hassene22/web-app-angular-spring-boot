@@ -1,0 +1,97 @@
+<div class="fournisseur-list-container">
+  <h2>Fournisseurs</h2>
+  
+  <div class="search-section">
+    <form (ngSubmit)="onSearchSubmit()">
+      <input formControlName="search" placeholder="Rechercher fournisseur...">
+      <button type="submit">Rechercher</button>
+    </form>
+    
+    <div class="autocomplete-results" *ngIf="fournisseurForm.get('search')?.value">
+      <div *ngFor="let fournisseur of filteredFournisseurs | async" 
+           (click)="selectFournisseur(fournisseur)"
+           class="autocomplete-item">
+        {{fournisseur.nom}} ({{fournisseur.code}})
+      </div>
+    </div>
+  </div>
+  
+  <form [formGroup]="fournisseurForm" (ngSubmit)="onFournisseurSubmit()" class="fournisseur-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="code">Code</label>
+        <input type="text" id="code" formControlName="code">
+        <div *ngIf="fournisseurForm.get('code')?.errors?.['required'] && fournisseurForm.get('code')?.touched" class="error">
+          Code is required
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" formControlName="nom">
+        <div *ngIf="fournisseurForm.get('nom')?.errors?.['required'] && fournisseurForm.get('nom')?.touched" class="error">
+          Nom is required
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="adresse">Adresse</label>
+      <input type="text" id="adresse" formControlName="adresse">
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email">
+        <div *ngIf="fournisseurForm.get('email')?.errors?.['email'] && fournisseurForm.get('email')?.touched" class="error">
+          Email invalide
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">Téléphone</label>
+        <input type="text" id="tel" formControlName="tel">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstName">Prénom</label>
+        <input type="text" id="firstName" formControlName="firstName">
+      </div>
+      
+      <div class="form-group">
+        <label for="lastName">Nom</label>
+        <input type="text" id="lastName" formControlName="lastName">
+      </div>
+    </div>
+    
+    <button type="submit" [disabled]="!fournisseurForm.valid">{{ isEditing ? 'Modifier Fournisseur' : 'Ajouter Fournisseur' }}</button>
+    <button type="button" (click)="resetForm()" *ngIf="isEditing">Annuler</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Téléphone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fournisseur of fournisseurs">
+        <td>{{fournisseur.code}}</td>
+        <td>{{fournisseur.nom}}</td>
+        <td>{{fournisseur.email}}</td>
+        <td>{{fournisseur.tel}}</td>
+        <td>
+          <button (click)="editFournisseur(fournisseur)">Modifier</button>
+          <button (click)="deleteFournisseur(fournisseur.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
