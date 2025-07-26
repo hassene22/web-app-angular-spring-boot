@@ -6,4 +6,5 @@ this project is part of my monthly internship at the National Transport Company 
 to fully utilise this project : you need database connection(mysql)(create ecommerce_db database) and vscode also you have to install angular and spring boot maven///
 then in the vscode terminal (backend directory) write the command: mvn spring-boot:run///
 then in the frontend directory write the command: ng serve///
+for the frontend go to the master branch and for the backend go to the main branch///
 in conclusion : i say thanks to everyone who has been helpful to me during the development of this project
