@@ -21,7 +21,7 @@ public class FactureService {
         return factureRepository.findAll();
     }
 
-    public List<Facture> findByUserId(Long fournisseur_Id) {
+    public List<Facture> findByfournisseurId(Long fournisseur_Id) {
         return factureRepository.findByfournisseur_Id(fournisseur_Id);
     }
 

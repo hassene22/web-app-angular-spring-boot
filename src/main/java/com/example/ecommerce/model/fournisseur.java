@@ -8,7 +8,7 @@ import lombok.Data;
 public class fournisseur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-     @Column(columnDefinition = "BIGINT UNSIGNED")
+    @Column(columnDefinition = "BIGINT UNSIGNED", nullable = false, unique = true)
     private Long id;
 
     private String code;

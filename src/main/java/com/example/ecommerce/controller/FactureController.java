@@ -23,8 +23,8 @@ public class FactureController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Facture>> getFacturesByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(factureService.findByUserId(userId));
+    public ResponseEntity<List<Facture>> getFacturesByUser(@PathVariable Long fournisseurId) {
+        return ResponseEntity.ok(factureService.findByfournisseurId(fournisseurId));
     }
 
     @PostMapping
