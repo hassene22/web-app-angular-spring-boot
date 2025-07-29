@@ -6,15 +6,17 @@
       <label for="numero">Numéro Facture</label>
       <input 
         type="number" 
+        oninput="this.readonly=true"
+        placeholder="numéro de facture"
         id="numero" 
-        formControlName="numero" 
-        [value]="nextNumero">
+        formControlName="numero">
     </div>
     
     <div class="form-group">
       <label for="date">Date Facture</label>
       <input 
         type="date" 
+        oninput="this.readonly=true"
         id="date" 
         formControlName="date">
       <div *ngIf="factureForm.get('date')?.invalid && (factureForm.get('date')?.dirty || factureForm.get('date')?.touched)" 
@@ -22,16 +24,18 @@
         <div *ngIf="factureForm.get('date')?.errors?.['required']">
           La date est requise.
         </div>
-        <div *ngIf="factureForm.get('date')?.errors?.['pastDate']">
-          La date doit être inférieur ou égale à la date actuelle.
+        <div *ngIf="factureForm.get('date')?.errors?.['futureDate']">
+          La date doit être inférieure ou égale à la date actuelle.
         </div>
       </div>
     </div>
     
-    <button  onclick="onCreateClick()" type="submit" [disabled]="factureForm.invalid">Créer Facture</button>
+    <button type="submit" [disabled]="factureForm.invalid">
+      {{ isEditing ? 'Modifier Facture' : 'Créer Facture' }}
+    </button>
   </form>
 
-  <table *ngIf="factures?.length; else noFactures">
+  <table >
     <thead>
       <tr>
         <th>Numéro</th>

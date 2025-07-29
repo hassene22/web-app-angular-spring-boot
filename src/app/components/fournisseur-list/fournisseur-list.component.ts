@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FournisseurService } from '../../services/fournisseur.service';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 interface Fournisseur {
   id?: number;
@@ -22,11 +21,12 @@ interface Fournisseur {
 })
 export class FournisseurListComponent implements OnInit {
   fournisseurs: Fournisseur[] = [];
-  filteredFournisseurs: Observable<Fournisseur[]> | undefined;
+  filteredFournisseurs: Fournisseur[] = [];
   fournisseurForm: FormGroup;
   isEditing: boolean = false;
   editingFournisseurId: number | null = null;
-  
+  showDropdown = false;
+  highlightedIndex = -1;
 
   constructor(
     private fb: FormBuilder,
@@ -47,10 +47,23 @@ export class FournisseurListComponent implements OnInit {
   ngOnInit(): void {
     this.loadFournisseurs();
     
-    this.filteredFournisseurs = this.fournisseurForm.get('search')!.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterFournisseurs(value || ''))
-    );
+    // Setup search autocomplete
+    this.fournisseurForm.get('search')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap(term => this.fournisseurService.searchFournisseurs(term))
+      )
+      .subscribe({
+        next: (results) => {
+          this.filteredFournisseurs = results;
+          this.highlightedIndex = -1;
+        },
+        error: (err) => {
+          console.error('Error during search:', err);
+          this.filteredFournisseurs = [];
+        }
+      });
   }
 
   loadFournisseurs(): void {
@@ -60,31 +73,33 @@ export class FournisseurListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading fournisseurs:', err);
-        // Optionally, show user-friendly error message
       }
     });
   }
 
-  private _filterFournisseurs(value: string): Fournisseur[] {
-    const filterValue = value.toLowerCase();
-    return this.fournisseurs.filter(f => 
-      f.nom.toLowerCase().includes(filterValue) || 
-      f.code.toLowerCase().includes(filterValue)
-    );
+  onSearchKeyUp(): void {
+    const searchTerm = this.fournisseurForm.get('search')?.value;
+    if (!searchTerm) {
+      this.filteredFournisseurs = [];
+    }
   }
 
- onSearchSubmit(): void {
-    const searchTerm = this.fournisseurForm.get('search')!.value;
+  onSearchBlur(): void {
+    setTimeout(() => {
+      this.showDropdown = false;
+    }, 200);
+  }
+
+  onSearchSubmit(): void {
+    const searchTerm = this.fournisseurForm.get('search')?.value;
     if (searchTerm) {
       this.fournisseurService.searchFournisseurs(searchTerm).subscribe({
         next: (data) => {
           this.fournisseurs = data;
-          // Display names of fournisseurs
-          console.log('Fournisseur names:', data.map((fournisseur: { nom: any; }) => fournisseur.nom));
+          this.showDropdown = false;
         },
         error: (err) => {
           console.error('Error searching fournisseurs:', err);
-          // Optionally, show user-friendly error message
         }
       });
     } else {
@@ -159,11 +174,13 @@ export class FournisseurListComponent implements OnInit {
       firstName: fournisseur.firstName || '',
       lastName: fournisseur.lastName || ''
     });
+    this.showDropdown = false;
   }
 
   resetForm(): void {
     this.fournisseurForm.reset();
     this.isEditing = false;
     this.editingFournisseurId = null;
+    this.showDropdown = false;
   }
 }

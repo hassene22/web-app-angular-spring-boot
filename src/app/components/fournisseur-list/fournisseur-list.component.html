@@ -3,13 +3,20 @@
   
   <div class="search-section">
     <form (ngSubmit)="onSearchSubmit()">
-      <input formControlName="search" placeholder="Rechercher fournisseur...">
+      <input 
+        type="text" 
+        formControlName="search" 
+        placeholder="Rechercher fournisseur..."
+        (keyup)="onSearchKeyUp()"
+        (focus)="showDropdown = true"
+        (blur)="onSearchBlur()">
       <button type="submit">Rechercher</button>
     </form>
     
-    <div class="autocomplete-results" *ngIf="fournisseurForm.get('search')?.value">
-      <div *ngFor="let fournisseur of filteredFournisseurs | async" 
+    <div class="autocomplete-results" *ngIf="showDropdown && filteredFournisseurs.length > 0">
+      <div *ngFor="let fournisseur of filteredFournisseurs; let i = index" 
            (click)="selectFournisseur(fournisseur)"
+           [class.highlighted]="i === highlightedIndex"
            class="autocomplete-item">
         {{fournisseur.nom}} ({{fournisseur.code}})
       </div>

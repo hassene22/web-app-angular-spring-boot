@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FactureService } from '../../services/facture.service';
 import { DatePipe } from '@angular/common';
-import { DashboardComponent } from '../dashboard/dashboard.component';
+
 @Component({
   selector: 'app-facture-list',
   templateUrl: './facture-list.component.html',
@@ -13,6 +13,8 @@ export class FactureListComponent implements OnInit {
   factures: any[] = [];
   factureForm: FormGroup;
   nextNumero: number = 1;
+  isEditing: boolean = false;
+  editingFactureId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -47,7 +49,9 @@ export class FactureListComponent implements OnInit {
     } else {
       this.nextNumero = 1;
     }
-    this.factureForm.patchValue({ numero: this.nextNumero });
+    if (!this.isEditing) {
+      this.factureForm.patchValue({ numero: this.nextNumero });
+    }
   }
 
   futureDateValidator() {
@@ -55,25 +59,23 @@ export class FactureListComponent implements OnInit {
       const selectedDate = new Date(control.value);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
-      if (selectedDate > today) {
-        return { pastDate: true };
+
+      if (selectedDate >today) {
+        return { futureDate: true };
       }
       return null;
     };
   }
+
   editFacture(facture: any): void {
-    // Assuming facture has the necessary properties
+    this.isEditing = true;
+    this.editingFactureId = facture.id;
     this.factureForm.patchValue({
       numero: facture.numero,
       date: this.datePipe.transform(facture.date, 'yyyy-MM-dd')
     });
-    // Optionally, you might want to update the facture instead of creating a new one
-    this.factureService.updateFacture(facture.id, this.factureForm.value).subscribe(
-      () => this.loadFactures(),
-      (err) => console.error(err)
-    );
   }
+
   deleteFacture(id: number): void {
     if (confirm('Voulez-vous vraiment supprimer cette facture ?')) {
       this.factureService.deleteFacture(id).subscribe(
@@ -82,8 +84,6 @@ export class FactureListComponent implements OnInit {
       );
     }
   }
- 
-
 
   onSubmit(): void {
     if (this.factureForm.valid) {
@@ -93,14 +93,30 @@ export class FactureListComponent implements OnInit {
         date: this.datePipe.transform(formValue.date, 'yyyy-MM-dd')
       };
 
-      this.factureService.createFacture(factureData).subscribe(
-        () => {
-          this.loadFactures();
-          this.factureForm.reset();
-          this.factureForm.patchValue({ numero: this.nextNumero });
-        },
-        (err) => console.error(err)
-      );
+      if (this.isEditing && this.editingFactureId !== null) {
+        this.factureService.updateFacture(this.editingFactureId, factureData).subscribe(
+          () => {
+            this.loadFactures();
+            this.resetForm();
+          },
+          (err) => console.error(err)
+        );
+      } else {
+        this.factureService.createFacture(factureData).subscribe(
+          () => {
+            this.loadFactures();
+            this.resetForm();
+          },
+          (err) => console.error(err)
+        );
+      }
     }
+  }
+
+  private resetForm(): void {
+    this.factureForm.reset();
+    this.isEditing = false;
+    this.editingFactureId = null;
+    this.factureForm.patchValue({ numero: this.nextNumero });
   }
 }

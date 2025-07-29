@@ -7,7 +7,10 @@
  <div style="flex: 1;">
       <app-facture-list></app-facture-list>
     </div>
- <div *ngIf="true" style="flex: 1;">
+     <button (click)="toggleDetails()">
+  {{ showDetails ? 'Masquer détails' : 'Détails' }}
+</button>
+ <div *ngIf="showDetails" style="flex: 1;">
       <app-fournisseur-list></app-fournisseur-list>
     
  

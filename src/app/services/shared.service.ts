@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SharedService {
+  private apiUrl = 'http://localhost:8080/api'
  hasClicked: boolean = false;
 
   onCreateClick(): boolean {
