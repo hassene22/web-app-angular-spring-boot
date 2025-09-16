@@ -10,7 +10,7 @@ import { DatePipe } from '@angular/common';
 
 import { Fournisseur } from '../../models/fournisseur.model';
 import { AuthService } from '../../services/auth.service';
-
+import { ArticleService } from '../../services/article.service';
 import { Router } from '@angular/router';
 export interface Article {
   quantity: any;
@@ -43,6 +43,9 @@ export class AdminComponent {
   selectedFacture?: Facture;
    selectedArticles: Article[] = [];
  factures: Facture[] = [];
+   articles: any[] = [];
+  newArticle: any = {};
+  editingArticle: any = null;
   isEditing: boolean = false;
   editingFournisseurId: number | null = null;
   apiUrl = 'http://localhost:8080/api/factures';
@@ -71,7 +74,8 @@ export class AdminComponent {
     private datePipe: DatePipe,
     public authService: AuthService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private articleservice:ArticleService
   
   ) {
     this.fournisseurForm = this.fb.group({
@@ -87,6 +91,7 @@ export class AdminComponent {
   }
     ngOnInit(): void {
    this.loadFactures();
+   this.loadArticles();
     this.loadFournisseurs();
     this.filteredFournisseurs = this.fournisseurForm.get('search')!.valueChanges.pipe(
       startWith(''),
@@ -320,6 +325,46 @@ export class AdminComponent {
   };
     this.isEditMode = false;
   }
+ loadArticles(): void {
+    this.articleservice.getAllArticles().subscribe(
+      (data) => {
+        this.articles = data;
+      
+      },
+      (err) => console.error(err)
+    );
+  }
+    createArticle(): void {
+    this.articleservice.createArticle(this.newArticle).subscribe(
+      () => {
+        this.loadArticles();
+        this.newArticle = {};
+      },
+      (err) => console.error(err)
+    );
+  }
+   editArticle(article: any): void {
+    this.editingArticle = { ...article };
+  }
+
+  updateArticle(): void {
+    this.articleservice.updateArticle(this.editingArticle.id, this.editingArticle).subscribe(
+      () => {
+        this.loadArticles();
+        this.editingArticle = null;
+      },
+      (err) => console.error(err)
+    );
+  }
+   deleteArticle(id: number): void {
+    if (confirm('Are you sure you want to delete this article?')) {
+      this.articleservice.deleteArticle(id).subscribe(
+        () => this.loadArticles(),
+        (err) => console.error(err)
+      );
+    }
+  }
+
 }
 
 

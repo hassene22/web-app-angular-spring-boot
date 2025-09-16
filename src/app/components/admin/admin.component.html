@@ -144,3 +144,57 @@
     </tbody>
   </table>
 </div>
+<div class="article-list-container">
+  <h3>Articles</h3>
+  
+  <div class="create-form">
+    <h4>Add New Article</h4>
+    <form (ngSubmit)="createArticle()">
+      <input [(ngModel)]="newArticle.code" name="code" placeholder="Code" required>
+      <input [(ngModel)]="newArticle.libelle" name="libelle" placeholder="Libelle" required>
+      <input type="number" [(ngModel)]="newArticle.prix" name="prix" placeholder="Price" required>
+      <input type="number" [(ngModel)]="newArticle.tva" name="tva" placeholder="TVA" required>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+
+  <div *ngIf="editingArticle" class="edit-form">
+    <h4>Edit Article</h4>
+    <form (ngSubmit)="updateArticle()">
+      <input [(ngModel)]="editingArticle.code" name="code" required>
+      <input [(ngModel)]="editingArticle.libelle" name="libelle" required>
+      <input type="number" [(ngModel)]="editingArticle.prix" name="prix" required>
+      <input type="number" [(ngModel)]="editingArticle.tva" name="tva" required>
+      <button type="submit">Update</button>
+      <button type="button" (click)="editingArticle = null">Cancel</button>
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Libelle</th>
+        <th>Price</th>
+        <th>TVA</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let article of articles">
+        <td>{{article.code}}</td>
+        <td>{{article.libelle}}</td>
+        <td>{{article.prix | currency:'TND'}}</td>
+        <td>{{article.tva}}%</td>
+        
+       
+        <td>
+          <button (click)="editArticle(article)">Edit</button>
+          <button (click)="deleteArticle(article.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+</div>
