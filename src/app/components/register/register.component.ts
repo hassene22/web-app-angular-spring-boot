@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -8,24 +9,28 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  user = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
-  };
-  error: string = '';
-  success: string = '';
+  registerForm: FormGroup;
+  errorMessage: string | null = null;
+  private apiUrl = 'http://localhost:8080/api/auth/register';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
+    this.registerForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      role: ['USER', Validators.required] // default role
+    });
+  }
 
-  onSubmit(): void {
-    this.authService.register(this.user).subscribe(
-      () => {
-        this.success = 'Registration successful! Please login.';
-        setTimeout(() => this.router.navigate(['/login']), 2000);
-      },
-      (err) => this.error = err.error.message || 'Registration failed'
-    );
+  onSubmit() {
+    if (this.registerForm.valid) {
+      this.http.post(this.apiUrl, this.registerForm.value).subscribe({
+        next: () => this.router.navigate(['/login']),
+        error: () => this.errorMessage = 'Registration failed. Try again.'
+      });
+    } else {
+      this.errorMessage = 'Please fill in all fields correctly.';
+    }
   }
 }

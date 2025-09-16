@@ -1,25 +1,40 @@
-<div class="register-container">
-  <h2>Register</h2>
-  <form (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input type="text" id="firstName" [(ngModel)]="user.firstName" name="firstName" required>
-    </div>
-    <div class="form-group">
-      <label for="lastName">Last Name</label>
-      <input type="text" id="lastName" [(ngModel)]="user.lastName" name="lastName" required>
-    </div>
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" [(ngModel)]="user.email" name="email" required>
-    </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" [(ngModel)]="user.password" name="password" required>
-    </div>
-    <div *ngIf="error" class="error">{{error}}</div>
-    <div *ngIf="success" class="success">{{success}}</div>
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a routerLink="/login">Login</a></p>
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-md">
+    <h2 class="text-2xl font-bold text-center text-gray-800">Register</h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600">First Name</label>
+        <input formControlName="firstName" type="text" placeholder="Enter your first name"
+          class="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Last Name</label>
+        <input formControlName="lastName" type="text" placeholder="Enter your last name"
+          class="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Email</label>
+        <input formControlName="email" type="email" placeholder="Enter your email"
+          class="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Password</label>
+        <input formControlName="password" type="password" placeholder="Enter your password"
+          class="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+      <button type="submit"
+        class="w-full px-4 py-2 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700">
+        Register
+      </button>
+    </form>
+
+    <p class="text-sm text-center text-gray-600">
+      Already have an account?
+      <a routerLink="/login" class="font-medium text-green-600 hover:underline">Login</a>
+    </p>
+  </div>
 </div>

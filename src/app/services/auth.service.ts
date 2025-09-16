@@ -1,63 +1,67 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-
+import { Router } from '@angular/router';
+import { lastValueFrom, Observable ,BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
-getToken(): string | null {
-    return localStorage.getItem('token'); // Adjust based on where your token is stored
+ 
+public role: string | null = null;
+ public isLoggedInStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+ public  currentuser : { email: string; role: string} | null = null;
+  constructor(private http: HttpClient, private router: Router) {
+      const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    this.currentuser = JSON.parse(storedUser);
+    this.role = this.currentuser!.role;
+    this.isLoggedInStatus.next(true);
   }
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
   }
-  setTokens(accessToken: string, refreshToken?: string): void {
-    localStorage.setItem('token', accessToken);
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
+
+ async login(email: string, password: string): Promise<void> {
+    try {
+      const res = await lastValueFrom(
+        this.http.post<any>(`${this.apiUrl}/login`, { email, password })
+      );
+    this.role = res.role;
+    this.currentuser={email:email,role:res.role};
+      this.isLoggedInStatus.next(true);
+          // Save to localStorage
+    localStorage.setItem('user', JSON.stringify(this.currentuser));
+     
+
+      if (this.role === 'ADMIN') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    } catch (err) {
+      console.error('Login failed:', err);
     }
   }
-  constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { email, password }).pipe(
-      tap((res: any) => {
-        localStorage.setItem('token', res.token);
-      })
-    );
-  }
-
-  register(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, user);
-  }
-
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
-  }
-
-  logout(): void {
-    localStorage.removeItem('token');
-  }
-  refreshToken(): Observable<any> {
-    const refreshToken = this.getRefreshToken();
-    console.log('Refresh Token:', refreshToken); // Debug
-    if (!refreshToken) {
-      return throwError(() => new Error('No refresh token available'));
-    }
-    return this.http.post(`${this.apiUrl}/refresh-token`, { refreshToken }).pipe(
-      catchError((err) => {
-        console.error('Refresh token error:', err);
-        this.logout();
-        return throwError(() => new Error('Failed to refresh token'));
-      })
-    );
-  }
+async getRole(id: string): Promise<string> {
+  return await lastValueFrom(this.http.get<string>(`${this.apiUrl}/${id}`));
 }
 
-  
+ async isAdmin(id: string): Promise<boolean> {
+  return (await this.getRole(id)) === 'ADMIN';
+}
 
+async isUser(id: string): Promise<boolean> {
+  return await this.getRole(id) === 'USER';
+}
+isloggedIn():Observable< boolean> {
+  return this.isLoggedInStatus.asObservable();
+
+}
+logout(): void {
+  this.isLoggedInStatus.next(false);
+  this.role = null;
+   this.currentuser = null;
+  localStorage.removeItem('user');
+  this.router.navigate(['/login']);
+}
+}

@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
-
+import { AuthService } from './services/auth.service';
+import {Observable,of } from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'my-project';
-   isLoggedIn: boolean = false; // Explicitly define isLoggedIn with type boolean
-    notLoggedIn: boolean = true; // Explicitly define notLoggedIn with type boolean
-  constructor() {
-    // Replace with your actual authentication logic, e.g., checking a token
-    this.isLoggedIn = !!localStorage.getItem('authToken');
-    this.notLoggedIn = !this.isLoggedIn; // Update notLoggedIn based on isLoggedIn
-     // Example logic
+  title = 'ecommerce-frontend';
+
+  constructor(public authService: AuthService) {
+
+
+
   }
+ 
 }

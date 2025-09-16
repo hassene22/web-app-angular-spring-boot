@@ -1,33 +1,27 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { ArticleListComponent } from './components/article-list/article-list.component';
-import { FactureListComponent } from './components/facture-list/facture-list.component';
-import { FournisseurListComponent } from './components/fournisseur-list/fournisseur-list.component';
-import { ReactiveFormsModule } from '@angular/forms'; // Add this
-import { DatePipe } from '@angular/common';
-import { FactureService } from './services/facture.service';
+import { AppRoutingModule } from './app-routing.module';
+import { AuthGuard } from './guards/auth.guard';
+import { AuthService } from './services/auth.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AdminComponent } from './components/admin/admin.component';
+import { authInterceptor } from './auth.interceptor';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+
 const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { 
-    path: 'dashboard', 
-    component: DashboardComponent,
-    children: [
-      { path: 'articles', component: ArticleListComponent },
-      { path: '', redirectTo: 'articles', pathMatch: 'full' }
-    ]
-  },
- 
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' }
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
@@ -36,20 +30,18 @@ const routes: Routes = [
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    ArticleListComponent,
-    FactureListComponent,
-    FournisseurListComponent
-
+    AdminComponent
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    CommonModule,
-    FormsModule,
+      CommonModule,
     HttpClientModule,
+    FormsModule,
+    AppRoutingModule ,
     RouterModule.forRoot(routes)
   ],
-  providers: [FactureService, DatePipe],
+  providers: [AuthService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,22 +1,64 @@
+<div class="container mt-3">
+  <h2>Gestion des Factures</h2>
+<button routerLink="/dashboard">création</button>
+  <!-- Formulaire -->
+ 
+
+  <!-- Tableau -->
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Numero</th>
+        <th>Date</th>
+        <th>Fournisseur</th>
+        <th>Article</th>
+        <th>Quantité</th>
+        <th>Montant</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let facture of factures">
+        <td>{{ facture.numero }}</td>
+        <td>{{ facture.date | date: 'yyyy-MM-dd' }}</td>
+        <td>{{ facture.fournisseur.nom }}</td>
+        <td>{{ facture.article?.libelle}}</td>
+        <td>{{ facture.quantity}}</td>
+        <td>{{ facture.montant |currency:"TND"}}</td>
+        <td>{{ facture.montantTotal|currency:"TND" }}</td>
+        <td>
+          
+         
+            <button (click)="goToFacture(facture.id!)">modifier</button>
+          <button class="btn btn-sm btn-success" (click)="validateFacture(facture.id!)">
+            Valider
+          </button>
+          <button class="btn btn-sm btn-secondary" (click)="printFacture(facture)">
+            Imprimer
+          </button>
+           <button class="btn btn-sm btn-danger" (click)="deleteFacture(facture.id!)">
+            Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
 <div class="fournisseur-list-container">
   <h2>Fournisseurs</h2>
   
   <div class="search-section">
     <form (ngSubmit)="onSearchSubmit()">
-      <input 
-        type="text" 
-        formControlName="search" 
-        placeholder="Rechercher fournisseur..."
-        (keyup)="onSearchKeyUp()"
-        (focus)="showDropdown = true"
-        (blur)="onSearchBlur()">
+      <input formControlName="search" placeholder="Rechercher fournisseur...">
       <button type="submit">Rechercher</button>
     </form>
     
-    <div class="autocomplete-results" *ngIf="showDropdown && filteredFournisseurs.length > 0">
-      <div *ngFor="let fournisseur of filteredFournisseurs; let i = index" 
+    <div class="autocomplete-results" *ngIf="fournisseurForm.get('search')?.value">
+      <div *ngFor="let fournisseur of filteredFournisseurs | async" 
            (click)="selectFournisseur(fournisseur)"
-           [class.highlighted]="i === highlightedIndex"
            class="autocomplete-item">
         {{fournisseur.nom}} ({{fournisseur.code}})
       </div>

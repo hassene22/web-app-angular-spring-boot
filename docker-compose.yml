@@ -1,0 +1,61 @@
+
+services:
+  frontend:
+    build: C:\Users\hassene\Desktop\web-app\my-project
+    ports:
+      - "4200:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+    networks:
+      - oauth-net
+
+  backend:
+    build: C:\Users\hassene\Desktop\web-app\backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=$${root}
+      - SPRING_DATASOURCE_PASSWORD=$${2301hassene}
+      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
+      - JWT_SECRET=$${yourSecretKeyForJWTSigning}
+      - JWT_EXPIRATION=$${86400000}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mysql-db
+    networks:
+      - oauth-net
+
+  mysql-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=$${ecommerce_db}
+      - MYSQL_USER=$${hassene}
+      - MYSQL_PASSWORD=$${2301hassene}
+      - MYSQL_ROOT_PASSWORD=$${2301hassene}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - oauth-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  mysql-data:
+
+networks:
+  oauth-net:
+    driver: nat
