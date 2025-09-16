@@ -1,0 +1,17 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          angular-client:
+            client-id: ${OAUTH2_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_SECRET}
+            scope: read,write
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          angular-client:
+            authorization-uri: http://localhost:8080/oauth2/authorize
+            token-uri: http://localhost:8080/oauth2/token
+            user-info-uri: http://localhost:8080/user/me
+            user-name-attribute: name

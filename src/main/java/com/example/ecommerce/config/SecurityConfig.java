@@ -36,10 +36,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // Allow public access to auth endpoints 
                 .requestMatchers("/api/articles/**").permitAll()
-    .requestMatchers("/api/factures/**").permitAll()
-    .requestMatchers("/api/details/**").permitAll()
-    .requestMatchers("/api/fournisseurs**").permitAll()
-    .anyRequest().permitAll()
+                .requestMatchers("/api/factures/**").permitAll()
+                .requestMatchers("/api/fournisseurs**").permitAll()
+                .anyRequest().permitAll()
 
             )
            .oauth2ResourceServer(oauth2 -> oauth2.jwt());
@@ -70,10 +69,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Allow Angular frontend
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true); // Allow cookies or credentials if needed
+        configuration.setAllowCredentials(true); 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

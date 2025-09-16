@@ -28,6 +28,11 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
@@ -56,5 +61,11 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+    public enum Role {
+        ADMIN, USER
+    }
+    public String getrole() {
+        return role.name();
     }
 }

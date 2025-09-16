@@ -12,6 +12,7 @@ public class Article {
     private Long id;
 
     private String code;
+    
     private String libelle;
     private double prix;
     private double tva;
